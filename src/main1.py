@@ -32,6 +32,8 @@ import uasyncio as asyncio
 from lin import Lin
 from duocontrol import duo_ctrl
 from spiritlevel import spirit_level
+from adcvoltage import adc_voltage
+
 import time
 from machine import UART, Pin, I2C, soft_reset
 
@@ -42,6 +44,7 @@ connect = None
 lin = None
 dc = None
 sl = None
+voltage = None
 
 # Change the following configs to suit your environment
 topic_root      = 'truma'
@@ -61,6 +64,7 @@ def set_prefix(topic):
     global S_TOPIC_2
     global Pub_Prefix
     global Pub_SL_Prefix
+    global Pub_ADC_Prefix
     global HA_STOPIC
     global HA_CTOPIC
     global HA_CONFIG
@@ -70,6 +74,7 @@ def set_prefix(topic):
     S_TOPIC_2       = 'homeassistant/status'
     Pub_Prefix      = 'service/' + topic_root + '/control_status/' 
     Pub_SL_Prefix   = 'service/spiritlevel/status/'
+    Pub_ADC_Prefix  = 'service/adc/status/'
 
     # Auto-discovery-function of home-assistant (HA)
     HA_MODEL  = 'inetbox'
@@ -237,6 +242,14 @@ async def main():
                     await connect.client.publish(Pub_SL_Prefix+key, str(s[key]), qos=1)
                 except:
                     log.debug("Error in spirit_level status publishing")
+        if not(voltage == None):        
+            s = voltage.get_all()
+            for key in s.keys():
+                log.debug(f'publish {key}:{s[key]}')
+                try:
+                    await connect.client.publish(Pub_ADC_Prefix+key, str(s[key]), qos=1)
+                except:
+                    log.debug("Error in adc status publishing")
         i += 1
         if not(i % 6):
             i = 0
@@ -270,6 +283,14 @@ async def sl_loop():
         #print("Angle X: " + str(sl.get_roll()) + "      Angle Y: " +str(sl.get_pitch()) )
         await asyncio.sleep_ms(100)
 
+async def voltage_loop():
+    await asyncio.sleep(5) # Delay at begin
+    log.info("adc-loop is running")
+    while True:
+        voltage.loop()
+        #print("Voltage: " + str(sl.get_roll()) + "      Angle Y: " +str(sl.get_pitch()) )
+        await asyncio.sleep_ms(1000)
+
 async def ctrl_loop():
     loop = asyncio.get_event_loop()
     a=asyncio.create_task(main())
@@ -278,6 +299,8 @@ async def ctrl_loop():
         c=asyncio.create_task(dc_loop())
     if not(sl == None):
         d=asyncio.create_task(sl_loop())
+    if not(voltage == None):
+        c=asyncio.create_task(voltage_loop())
     while True:
         await asyncio.sleep(10)
         if a.done():
@@ -294,6 +317,7 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
     global lin
     global dc
     global sl
+    global voltage
     global file
     connect = w
     
@@ -301,7 +325,8 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
     cred = connect.read_json_creds()
     activate_duoControl  = (cred["ADC"] == "1")
     activate_spiritlevel = (cred["ASL"] == "1")
-        
+    activate_adc = 1
+
     if mqtt_debug:
         log.setLevel(logging.DEBUG)
     else:    
@@ -335,6 +360,13 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
         i2c = I2C(sda=Pin(sda), scl=Pin(scl), freq=400000)
         time.sleep(1.5)
         sl = spirit_level(i2c)
+    if activate_adc:
+        adc1 = w.p.get_pin("adc_1_pin")[1]
+        adc2 = w.p.get_pin("adc_2_pin")[1]
+        log.info(f"Activate ADC set to true, using GPIO {adc1}(ADC1), {adc2}(ADC2) as input") 
+        voltage = adc_voltage(adc1)
+    else:
+        voltage = None
         
     # Initialize the lin-object
     lin = Lin(serial, w.p, lin_debug, inet_debug)
@@ -350,8 +382,8 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
         HA_CONFIG.update(dc.HA_DC_CONFIG)
     if not(sl == None):
         HA_CONFIG.update(sl.HA_SL_CONFIG)
+    if not(voltage == None):
+        HA_CONFIG.update(voltage.HA_ADC_CONFIG)
         
     asyncio.run(ctrl_loop())    
     #loop.run_forever()
-
-
