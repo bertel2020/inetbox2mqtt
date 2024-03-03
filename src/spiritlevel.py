@@ -9,6 +9,7 @@
 # change_log:
 # 0.1 Initial release
 # 0.2 cleand up some code
+# add temperature reading
 
 from imu import MPU6050
 from kalman import KalmanAngle
@@ -66,6 +67,9 @@ class spirit_level:
 
         self.timer = time.time()
 
+        #Read Accelerometer
+        self.temp = 0
+        self.temp = self.imu.temperature
 
     def loop(self):
         try:
@@ -112,6 +116,9 @@ class spirit_level:
 
             #print("Angle X: " + str(self.kalAngleX)+"   " +"Angle Y: " + str(self.kalAngleY))
 
+            #Read Accelerometer
+            self.temp = self.imu.temperature
+
         except Exception as exc:
             print(exc)
 
@@ -126,6 +133,10 @@ class spirit_level:
     def get_angles(self):
         return {self.kalAngleX, self.kalAngleY}
 
+    def get_temp(self):
+        return {"temp": self.temp}
+
     def get_all(self):
         return {"spirit_level_pitch": self.kalAngleY,
-                "spirit_level_roll": self.kalAngleX }
+                "spirit_level_roll": self.kalAngleX,
+                "temp": self.temp}
