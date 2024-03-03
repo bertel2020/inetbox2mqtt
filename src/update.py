@@ -32,7 +32,7 @@ def update_repo():
     #sleep to give some boards time to initialize, for example Rpi Pico W
 
     # bootloader for the whole suite
-    tree = "github:mc0110/inetbox2mqtt"
+    tree = "github:bertel2010/inetbox2mqtt"
 
     env = [
         ["/src/", "args.py", "/"],
