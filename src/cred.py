@@ -39,6 +39,7 @@ def update_repo():
         ["/src/", "vector.py", "/"],
         ["/src/", "spiritlevel.py", "/"],
         ["/src/", "duocontrol.py", "/"],
+        ["/src/", "adcvoltage.py", "/"],
         ["/src/", "imu.py", "/"],
         ["/lib/", "gen_html.py", "/lib"],
         ["/lib/", "kalman.py", "/lib"],
@@ -77,7 +78,7 @@ def read_repo_rel():
     import mip
     import time
     try:
-        mip.install("github:mc0110/inetbox2mqtt/src/release.py", target = "/")
+        mip.install("github:bertel2020/inetbox2mqtt/src/release.py", target = "/")
     except:
         import machine
         machine.reset()
