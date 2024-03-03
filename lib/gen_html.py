@@ -4,7 +4,7 @@ import gc
 #from lin import Lin
 
 class Gen_Html():
-    CR_M    = "(c) MIT licence &nbsp<a href='https://github.com/mc0110/inetbox2mqtt' target='_blank'>­inetbox2mqtt</a>&nbsp(2023) "
+    CR_M    = "(c) MIT licence &nbsp<a href='https://github.com/bertel2020/inetbox2mqtt' target='_blank'>­inetbox2mqtt</a>&nbsp(2024) "
 
     CONNECT_STATE = ""
 
