@@ -22,7 +22,8 @@
 #      "HOSTNAME": ["text", "Hostname:", "6"],
 #      "ADC": ["checkbox", "Addon DuoControl :", "7"],
 #      "ASL": ["checkbox", "Addon SpiritLevel:", "8"],
-# #     "OSR": ["checkbox", "OS Web:", "9"],
+#      "AAV": ["checkbox", "Addon ADC Voltage:", "9"],
+# #     "OSR": ["checkbox", "OS Web:", "10"],
 #      }
 #     with open(CRED_JSON, "w") as f: json.dump(j, f)
 # 

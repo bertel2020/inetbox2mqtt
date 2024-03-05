@@ -178,7 +178,7 @@ class MPU6050(object):
             self._read(self.buf2, 0x41, self.mpu_addr)
         except OSError:
             raise MPUException(self._I2Cerror)
-        return bytes_toint(self.buf2[0], self.buf2[1])/340 + 36,53  # I think
+        return bytes_toint(self.buf2[0], self.buf2[1])/340 + 36.53  # I think
 
     # passthrough
     @property

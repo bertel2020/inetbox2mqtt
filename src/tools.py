@@ -1,4 +1,4 @@
-from machine import Pin
+from machine import Pin, ADC
 
 # this routine isn't nessecary - see bytes.hex(" ")
 # def format_bytes(bytestring):
@@ -39,6 +39,8 @@ PIN_MAPS = {
     "sl_i2c": 1,
     "sl_sda": 26,
     "sl_scl": 25,
+    "adc_1_pin": [0,34,0],
+    "adc_2_pin": [0,35,0],
     },
     
     
@@ -166,14 +168,21 @@ class PIN_MAP():
         else:
             p0 = Pin(self._PIN_MAP[s][1], Pin.IN, Pin.PULL_DOWN)
         v = (p0.value() != self._PIN_MAP[2])    
-    #    print("check pin", p, " inv: ", i, " Val: ", v)
+        #print("check pin", p, " inv: ", i, " Val: ", v)
+        return v
+
+    # input pin
+    def get_adc(s):
+        adc1 = ADC(Pin(s),atten=ADC.ATTN_11DB)
+        v = round((adc1.read_uv()/1000000),1)    
+        val = adc1.read(),    
+        print("check pin: ", s, "Value: ", val, " Voltage: ", v)
         return v
 
     # pin, inverted, value ("ON", "OFF")
     def set_gpio(self, s, v):
-   #     p, i, v):
         p0 = Pin(self._PIN_MAP[s][1], Pin.OUT)
         v = (v != self._PIN_MAP[s][2])
         p0.value(v)
-    #    print("set pin", p, " inv: ", i, " to: ", v)
+        #print("set pin", p, " inv: ", i, " to: ", v)
 

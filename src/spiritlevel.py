@@ -67,7 +67,7 @@ class spirit_level:
 
         self.timer = time.time()
 
-        #Read Accelerometer
+        #Read Temperature
         self.temp = 0
         self.temp = self.imu.temperature
 
@@ -116,7 +116,7 @@ class spirit_level:
 
             #print("Angle X: " + str(self.kalAngleX)+"   " +"Angle Y: " + str(self.kalAngleY))
 
-            #Read Accelerometer
+            #Read Temperature
             self.temp = self.imu.temperature
 
         except Exception as exc:

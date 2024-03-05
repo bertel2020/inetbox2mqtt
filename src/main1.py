@@ -236,6 +236,7 @@ async def main():
                     log.debug("Error in duo_ctrl status publishing")
         if not(sl == None):        
             s = sl.get_all()
+            print("SpiritLevel Result: ", s)
             for key in s.keys():
                 log.debug(f'publish {key}:{s[key]}')
                 try:
@@ -244,6 +245,7 @@ async def main():
                     log.debug("Error in spirit_level status publishing")
         if not(voltage == None):        
             s = voltage.get_all()
+            print("ADC Voltage Result: ", s)
             for key in s.keys():
                 log.debug(f'publish {key}:{s[key]}')
                 try:
@@ -325,7 +327,7 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
     cred = connect.read_json_creds()
     activate_duoControl  = (cred["ADC"] == "1")
     activate_spiritlevel = (cred["ASL"] == "1")
-    activate_adc = 1
+    activate_adcvoltage = (cred["AAV"] == "1")
 
     if mqtt_debug:
         log.setLevel(logging.DEBUG)
@@ -360,7 +362,7 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
         i2c = I2C(sda=Pin(sda), scl=Pin(scl), freq=400000)
         time.sleep(1.5)
         sl = spirit_level(i2c)
-    if activate_adc:
+    if activate_adcvoltage:
         adc1 = w.p.get_pin("adc_1_pin")[1]
         adc2 = w.p.get_pin("adc_2_pin")[1]
         log.info(f"Activate ADC set to true, using GPIO {adc1}(ADC1), {adc2}(ADC2) as input") 
