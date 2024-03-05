@@ -174,7 +174,7 @@ class PIN_MAP():
     # input pin
     def get_adc(s):
         adc1 = ADC(Pin(s),atten=ADC.ATTN_11DB)
-        v = round((adc1.read_uv()/1000000),1)    
+        v = round((adc1.read_uv()/1000000),4)    
         val = adc1.read(),    
         print("check pin: ", s, "Value: ", val, " Voltage: ", v)
         return v

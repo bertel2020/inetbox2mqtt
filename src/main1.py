@@ -291,7 +291,7 @@ async def voltage_loop():
     while True:
         voltage.loop()
         #print("Voltage: " + str(sl.get_roll()) + "      Angle Y: " +str(sl.get_pitch()) )
-        await asyncio.sleep_ms(1000)
+        await asyncio.sleep(5)
 
 async def ctrl_loop():
     loop = asyncio.get_event_loop()
