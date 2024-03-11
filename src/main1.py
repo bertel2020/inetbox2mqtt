@@ -33,6 +33,7 @@ from lin import Lin
 from duocontrol import duo_ctrl
 from spiritlevel import spirit_level
 from adcvoltage import adc_voltage
+from sensor import magnetic_sensor
 
 import time
 from machine import UART, Pin, I2C, soft_reset
@@ -45,6 +46,7 @@ lin = None
 dc = None
 sl = None
 voltage = None
+ms = None
 
 # Change the following configs to suit your environment
 topic_root      = 'truma'
@@ -65,6 +67,7 @@ def set_prefix(topic):
     global Pub_Prefix
     global Pub_SL_Prefix
     global Pub_ADC_Prefix
+    global Pub_MS_Prefix
     global HA_STOPIC
     global HA_CTOPIC
     global HA_CONFIG
@@ -75,6 +78,7 @@ def set_prefix(topic):
     Pub_Prefix      = 'service/' + topic_root + '/control_status/' 
     Pub_SL_Prefix   = 'service/spiritlevel/status/'
     Pub_ADC_Prefix  = 'service/adc/status/'
+    Pub_MS_Prefix   = 'service/magnetic_sensor/'
 
     # Auto-discovery-function of home-assistant (HA)
     HA_MODEL  = 'inetbox'
@@ -252,6 +256,15 @@ async def main():
                     await connect.client.publish(Pub_ADC_Prefix+key, str(s[key]), qos=1)
                 except:
                     log.debug("Error in adc status publishing")
+        if not(ms == None):        
+            s = ms.get_all()
+            print("Magnetic Sensor result: ", s)
+            for key in s.keys():
+                log.debug(f'publish {key}:{s[key]}')
+                try:
+                    await connect.client.publish(Pub_MS_Prefix+key, str(s[key]), qos=1)
+                except:
+                    log.debug("Error in magnetic sensor status publishing")
         i += 1
         if not(i % 6):
             i = 0
@@ -293,6 +306,15 @@ async def voltage_loop():
         #print("Voltage: " + str(sl.get_roll()) + "      Angle Y: " +str(sl.get_pitch()) )
         await asyncio.sleep(5)
 
+async def ms_loop():
+    await asyncio.sleep(5) # Delay at begin
+    log.info("magnetic_sensor-loop is running")
+    while True:
+        ms.loop()
+        #print("Status: " + str(ms.get_all() ))
+        await asyncio.sleep(1)
+
+
 async def ctrl_loop():
     loop = asyncio.get_event_loop()
     a=asyncio.create_task(main())
@@ -303,6 +325,8 @@ async def ctrl_loop():
         d=asyncio.create_task(sl_loop())
     if not(voltage == None):
         c=asyncio.create_task(voltage_loop())
+    if not(ms == None):
+        c=asyncio.create_task(ms_loop())
     while True:
         await asyncio.sleep(10)
         if a.done():
@@ -320,6 +344,7 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
     global dc
     global sl
     global voltage
+    global ms
     global file
     connect = w
     
@@ -328,6 +353,8 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
     activate_duoControl  = (cred["ADC"] == "1")
     activate_spiritlevel = (cred["ASL"] == "1")
     activate_adcvoltage = (cred["AAV"] == "1")
+    #activate_magneticsensor = (cred["AMS"] == "1")
+    activate_magneticsensor = 1
 
     if mqtt_debug:
         log.setLevel(logging.DEBUG)
@@ -369,6 +396,13 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
         voltage = adc_voltage(adc1)
     else:
         voltage = None
+    if activate_magneticsensor:
+        ms1 = w.p.get_pin("magnetic_sensor_1_pin")[1]
+        ms2 = w.p.get_pin("magnetic_sensor_2_pin")[1]
+        log.info(f"Activate magnetic sensor set to true, using GPIO {ms1}, {ms2} as input") 
+        ms = magnetic_sensor(ms1)
+    else:
+        ms = None
         
     # Initialize the lin-object
     lin = Lin(serial, w.p, lin_debug, inet_debug)
@@ -386,6 +420,8 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
         HA_CONFIG.update(sl.HA_SL_CONFIG)
     if not(voltage == None):
         HA_CONFIG.update(voltage.HA_ADC_CONFIG)
+    if not(ms == None):
+        HA_CONFIG.update(ms.HA_MS_CONFIG)
         
     asyncio.run(ctrl_loop())    
     #loop.run_forever()

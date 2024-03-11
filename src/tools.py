@@ -41,6 +41,8 @@ PIN_MAPS = {
     "sl_scl": 25,
     "adc_1_pin": [0,34,0],
     "adc_2_pin": [0,35,0],
+    "magnetic_sensor_1_pin": [1, 32, 0],
+    "magnetic_sensor_2_pin": [1, 33, 0],
     },
     
     
@@ -177,6 +179,13 @@ class PIN_MAP():
         v = round((adc1.read_uv()/1000000),4)    
         val = adc1.read(),    
         print("check pin: ", s, "Value: ", val, " Voltage: ", v)
+        return v
+
+    # input pin
+    def get_status(s):
+        p0 = Pin(s, Pin.IN, Pin.PULL_UP)
+        v = p0.value() 
+        print("check pin: ", s, "Value: ", v)
         return v
 
     # pin, inverted, value ("ON", "OFF")

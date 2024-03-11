@@ -168,6 +168,7 @@ class Connect():
          "ADC": ["checkbox", "Addon DuoControl :", "C"],
          "ASL": ["checkbox", "Addon SpiritLevel:", "D"],
          "AAV": ["checkbox", "Addon ADC Voltage:", "E"],
+         "AMS": ["checkbox", "Addon Magnetic Sensor:", "F"],
          }
         with open(self.CRED_JSON, "w") as f: json.dump(j, f)
 

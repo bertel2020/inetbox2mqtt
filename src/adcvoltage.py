@@ -25,7 +25,7 @@ class adc_voltage:
     # build up status and initialize GPIO
     def __init__(self, pin):
         self.pin = pin
-        v = PIN_MAP.get_adc(pin)
+        v = PIN_MAP.get_adc(self.pin)
 
 
     def loop(self):
