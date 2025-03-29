@@ -353,9 +353,8 @@ def run(w, lin_debug, inet_debug, mqtt_debug, logfile):
     activate_duoControl  = (cred["ADC"] == "1")
     activate_spiritlevel = (cred["ASL"] == "1")
     activate_adcvoltage = (cred["AAV"] == "1")
-    #activate_magneticsensor = (cred["AMS"] == "1")
-    activate_magneticsensor = 1
-
+    activate_magneticsensor = (cred["AMS"] == "1")
+    
     if mqtt_debug:
         log.setLevel(logging.DEBUG)
     else:    

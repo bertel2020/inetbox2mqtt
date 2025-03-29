@@ -76,7 +76,7 @@ if (w.run_mode() > 1):
 # normal mode (run mode == 1) or OS run mode (run_mode == 0) execution    
 else:
     if w.creds() and (w.run_mode() == 1):
-        log.info("Normal mode activated - for chance to OS-mode type in terminal:")
+        log.info("Normal mode activated - for change to OS-mode type in terminal:")
         w.connect()
         print(">>>import os")
         print(">>>os.remove('run_mode.dat')")    

@@ -178,14 +178,14 @@ class PIN_MAP():
         adc1 = ADC(Pin(s),atten=ADC.ATTN_11DB)
         v = round((adc1.read_uv()/1000000),4)    
         val = adc1.read(),    
-        print("check pin: ", s, "Value: ", val, " Voltage: ", v)
+        #print("check pin: ", s, "Value: ", val, " Voltage: ", v)
         return v
 
     # input pin
     def get_status(s):
         p0 = Pin(s, Pin.IN, Pin.PULL_UP)
         v = p0.value() 
-        print("check pin: ", s, "Value: ", v)
+        #print("check pin: ", s, "Value: ", v)
         return v
 
     # pin, inverted, value ("ON", "OFF")

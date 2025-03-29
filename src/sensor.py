@@ -30,9 +30,9 @@ class magnetic_sensor:
     def loop(self):
         v = PIN_MAP.get_status(self.pin)
         if v:
-            self.v = "Open"
+            self.v = "CLOSED"
         else:
-            self.v = "Closed"
+            self.v = "OPEN"
                         
 
 
